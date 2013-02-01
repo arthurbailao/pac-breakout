@@ -12,9 +12,7 @@ Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     BreakoutItem(parent),
     x(x), y(y),
     radius(5.0),
-    direction(),
-    first(true),
-    colliding(false)
+    direction()
 {
     this->setPos(this->mapToScene(this->x, this->y));
     this->direction = QLineF(this->mapToScene(this->x, this->y), this->mapToScene(this->x+1.0, this->y));
@@ -67,7 +65,8 @@ void Ball::collision()
 void Ball::next()
 {
     qreal angle = this->direction.angle()*M_PI/180.0;
+    qDebug() << this->direction.angle();
     this->direction.setP1(this->direction.p2());
-    this->direction.setP2(QPointF(this->direction.p1().x() + cos(angle), this->direction.p1().y() + sin(angle)));
+    this->direction.setP2(QPointF(this->direction.p1().x() + cos(angle), this->direction.p1().y() - sin(angle)));
     this->setPos(this->direction.p2());
 }

@@ -25,8 +25,6 @@ private:
     qreal x, y;
     const qreal radius;
     QLineF direction;
-    bool first;
-    bool colliding;
 
     void collision();
     void next();

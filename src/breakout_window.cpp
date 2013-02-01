@@ -15,7 +15,7 @@ BreakoutWindow::BreakoutWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->view->setScene(this->scene);
-//    ui->view->setRenderHint(QPainter::Antialiasing);
+    ui->view->setRenderHint(QPainter::Antialiasing);
 
     this->scene->setSceneRect(0,0,this->sceneWidth,this->sceneHeight);
     this->draw();
@@ -43,7 +43,7 @@ void BreakoutWindow::draw()
     this->scene->addLine(right, pen);
     this->scene->addLine(bottom, pen);
 
-    this->scene->addItem(new Ball(20, 140));
+    this->scene->addItem(new Ball(100, 100));
     this->scene->addItem(new Paddle);
 
 }
