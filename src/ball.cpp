@@ -14,8 +14,8 @@ Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     radius(5.0),
     direction()
 {
-    this->setPos(this->mapToScene(this->x, this->y));
-    this->direction = QLineF(this->mapToScene(this->x, this->y), this->mapToScene(this->x+1.0, this->y));
+    this->setPos(this->x, this->y);
+    this->direction = QLineF(QPointF(this->x, this->y), QPointF(this->x-1, this->y));
 }
 
 QRectF Ball::boundingRect() const
@@ -57,6 +57,7 @@ void Ball::collision()
     if(this->collidingItems().isEmpty())
         return;
 
+    this->collidingItems().first()->center();
     QPointF p1 = this->direction.p1();
     this->direction.setP1(this->direction.p2());
     this->direction.setP2(p1);
@@ -65,7 +66,7 @@ void Ball::collision()
 void Ball::next()
 {
     qreal angle = this->direction.angle()*M_PI/180.0;
-    qDebug() << this->direction.angle();
+//    qDebug() << this->direction.angle();
     this->direction.setP1(this->direction.p2());
     this->direction.setP2(QPointF(this->direction.p1().x() + cos(angle), this->direction.p1().y() - sin(angle)));
     this->setPos(this->direction.p2());

@@ -3,6 +3,7 @@
 
 #include "ball.hpp"
 #include "paddle.hpp"
+#include "wall.hpp"
 
 #include <QDebug>
 
@@ -34,16 +35,19 @@ void BreakoutWindow::draw()
     QPen pen(Qt::blue);
 
     QLineF top(this->scene->sceneRect().topLeft(), this->scene->sceneRect().topRight());
-    QLineF left(this->scene->sceneRect().bottomLeft(), this->scene->sceneRect().topLeft());
+    QLineF left(this->scene->sceneRect().topLeft(), this->scene->sceneRect().bottomLeft());
     QLineF right(this->scene->sceneRect().topRight(), this->scene->sceneRect().bottomRight());
     QLineF bottom(this->scene->sceneRect().bottomLeft(), this->scene->sceneRect().bottomRight());
 
-    this->scene->addLine(top, pen);
-    this->scene->addLine(left, pen);
-    this->scene->addLine(right, pen);
-    this->scene->addLine(bottom, pen);
+//    this->scene->addLine(top, pen);
+//    this->scene->addLine(left, pen);
+//    this->scene->addLine(right, pen);
+//    this->scene->addLine(bottom, pen);
 
-    this->scene->addItem(new Ball(100, 100));
+    this->scene->addItem(new Ball(100, 210));
     this->scene->addItem(new Paddle);
-
+    this->scene->addItem(new Wall(top));
+    this->scene->addItem(new Wall(left));
+    this->scene->addItem(new Wall(right));
+    this->scene->addItem(new Wall(bottom));
 }

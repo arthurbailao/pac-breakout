@@ -32,5 +32,6 @@ QPainterPath Paddle::shape() const
 QPointF Paddle::center() const
 {
     QRectF rect = this->boundingRect();
+    qDebug() << this->collidingItems().first()->center();
     return this->mapToScene(QPointF(rect.left(), (rect.top() + rect.bottom())/2.0));
 }
