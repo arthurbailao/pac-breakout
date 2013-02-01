@@ -23,10 +23,13 @@ public slots:
 
 private:
     qreal x, y;
-    qreal angle;
     const qreal radius;
+    QLineF direction;
+    bool first;
+    bool colliding;
 
     void collision();
+    void next();
     
 };
 

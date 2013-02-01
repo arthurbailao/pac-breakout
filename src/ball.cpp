@@ -5,18 +5,19 @@
 #include <QLineF>
 #include <QPainter>
 
-#include <math.h>
+#include <qmath.h>
+#define _USE_MATH_DEFINES
 
 Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     BreakoutItem(parent),
     x(x), y(y),
-    angle(0.0),
-    radius(5.0)
+    radius(5.0),
+    direction(),
+    first(true),
+    colliding(false)
 {
     this->setPos(this->mapToScene(this->x, this->y));
-    this->setRotation(this->angle);
-
-
+    this->direction = QLineF(this->mapToScene(this->x, this->y), this->mapToScene(this->x+1.0, this->y));
 }
 
 QRectF Ball::boundingRect() const
@@ -26,32 +27,23 @@ QRectF Ball::boundingRect() const
 
 void Ball::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/)
 {
-    painter->drawRect(this->boundingRect());
     painter->setBrush(Qt::SolidPattern);
     painter->drawEllipse(this->boundingRect());
-
 }
 
 void Ball::advance(int phase)
 {
     if(!phase) return;
 
-
-
-//    QPointF location = this->pos();
+    this->next();
     this->collision();
-    this->setPos(this->mapToParent(1,0));
-
-
-
 }
 
 QPainterPath Ball::shape() const
 {
-//    QPainterPath path;
-//    path.addEllipse(this->boundingRect());
-//    return path;
-    return QGraphicsObject::shape();
+    QPainterPath path;
+    path.addEllipse(this->boundingRect());
+    return path;
 }
 
 QPointF Ball::center() const
@@ -61,26 +53,21 @@ QPointF Ball::center() const
 
 void Ball::collision()
 {
-    QList<BreakoutItem*> items = this->collidingItems();
-    if(items.isEmpty())
+//    QList<BreakoutItem*> items = this->collidingItems();
+//    if(items.isEmpty())
+//        return;
+    if(this->collidingItems().isEmpty())
         return;
 
+    QPointF p1 = this->direction.p1();
+    this->direction.setP1(this->direction.p2());
+    this->direction.setP2(p1);
+}
 
-//    this->setRotation(this->rotation()+180);
-//    this->setPos(this->mapToParent(0,0));
-    this->prepareGeometryChange();
-    this->setRotation(this->rotation()+30);
-//    this->setTransformOriginPoint(this->boundingRect().topLeft());
-//    qDebug() << "Ball: " << this->center();
-//    qDebug() << "Paddle: " << items.first()->center();
-
-//    QLineF normalLine(this->center(), items.first()->center());
-//    this->scene()->addLine(normalLine, QPen(QColor(Qt::blue)));
-
-
-
-//    if(this->scene()->sceneRect().contains(this->boundingRect().center()))
-//    if(items.size() < 2) {
-//        qDebug() << static_cast<QGraphicsEllipseItem*>(items.first())->rect();
-//    }
+void Ball::next()
+{
+    qreal angle = this->direction.angle()*M_PI/180.0;
+    this->direction.setP1(this->direction.p2());
+    this->direction.setP2(QPointF(this->direction.p1().x() + cos(angle), this->direction.p1().y() + sin(angle)));
+    this->setPos(this->direction.p2());
 }

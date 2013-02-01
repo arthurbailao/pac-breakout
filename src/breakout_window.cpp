@@ -38,21 +38,12 @@ void BreakoutWindow::draw()
     QLineF right(this->scene->sceneRect().topRight(), this->scene->sceneRect().bottomRight());
     QLineF bottom(this->scene->sceneRect().bottomLeft(), this->scene->sceneRect().bottomRight());
 
-    QLineF test(QPointF(10, 150), QPointF(29, 145));
-    this->scene->addLine(test, pen);
-
     this->scene->addLine(top, pen);
-//    this->scene->addLine(left, pen);
+    this->scene->addLine(left, pen);
     this->scene->addLine(right, pen);
     this->scene->addLine(bottom, pen);
 
-    this->scene->addItem(new Ball(200, 140));
+    this->scene->addItem(new Ball(20, 140));
     this->scene->addItem(new Paddle);
 
-    qDebug() << "top: " << top.angle();
-    qDebug() << "right: " << right.angle();
-    qDebug() << "left: " << left.angle();
-    qDebug() << "bottom: " << bottom.angle();
-    qDebug() << "test: " << test.angle();
-    qDebug() << "top e right: " << test.angleTo(bottom);
 }
