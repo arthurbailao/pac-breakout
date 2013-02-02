@@ -28,10 +28,10 @@ void Wall::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, 
 
 QPainterPath Wall::shape() const
 {
-    /*QPainterPath path;
+    QPainterPath path;
     path.addRect(this->boundingRect());
-    return path*/;
-    return QGraphicsObject::shape();
+    return path;
+//    return QGraphicsObject::shape();
 }
 
 int Wall::type() const

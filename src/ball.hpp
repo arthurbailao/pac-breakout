@@ -23,9 +23,20 @@ signals:
 public slots:
 
 private:
+    class Direction : public QLineF
+    {
+    public:
+        Direction();
+        Direction(const QPointF& p1, const QPointF& p2);
+        Direction(qreal x1, qreal y1, qreal x2, qreal y2);
+        Direction(const QLine& line);
+
+        void invert();
+    };
+
     qreal x, y;
     const qreal radius;
-    QLineF direction;
+    Direction direction;
 
     void collision();
     void next();

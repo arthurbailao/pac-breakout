@@ -15,7 +15,7 @@ Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     direction()
 {
     this->setPos(this->x, this->y);
-    this->direction = QLineF(QPointF(this->x, this->y), QPointF(this->x-1, this->y));
+    this->direction = Direction(QPointF(this->x, this->y), QPointF(this->x-1, this->y));
 }
 
 QRectF Ball::boundingRect() const
@@ -64,10 +64,15 @@ void Ball::collision()
 
     BreakoutItem* item = this->collidingItems().first();
 
-    if(item->type() == BreakoutItem::Wall || item->type() == BreakoutItem::Paddle) {
-        QPointF p1 = this->direction.p1();
-        this->direction.setP1(this->direction.p2());
-        this->direction.setP2(p1);
+    if(item->type() == BreakoutItem::Wall) {
+        this->direction.invert();
+    }
+    else if(item->type() == BreakoutItem::Paddle) {
+        QLineF normal(this->center(), item->center());
+        qreal rotationAngle = 2.0 * this->direction.angleTo(normal);
+        this->direction.invert();
+        this->direction.setAngle(this->direction.angle() + rotationAngle);
+
     }
 }
 
@@ -78,4 +83,32 @@ void Ball::next()
     this->direction.setP1(this->direction.p2());
     this->direction.setP2(QPointF(this->direction.p1().x() + 1.5*cos(angle), this->direction.p1().y() - 1.5*sin(angle)));
     this->setPos(this->direction.p2());
+}
+
+
+Ball::Direction::Direction() :
+    QLineF()
+{
+}
+
+Ball::Direction::Direction(const QPointF& p1, const QPointF& p2) :
+    QLineF(p1, p2)
+{
+}
+
+Ball::Direction::Direction(qreal x1, qreal y1, qreal x2, qreal y2) :
+    QLineF(x1, y1, x2, y2)
+{
+}
+
+Ball::Direction::Direction(const QLine& line) :
+    QLineF(line)
+{
+}
+
+void Ball::Direction::invert()
+{
+    QPointF p1 = this->p1();
+    this->setP1(this->p2());
+    this->setP2(p1);
 }
