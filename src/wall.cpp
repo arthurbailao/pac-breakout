@@ -34,10 +34,14 @@ QPainterPath Wall::shape() const
     return QGraphicsObject::shape();
 }
 
+int Wall::type() const
+{
+    return BreakoutItem::Wall;
+}
 
 QPointF Wall::center() const
 {
-    qDebug() << this->collidingItems().first()->center();
+//    qDebug() << this->collidingItems().first()->center();
 
     return this->mapToScene(this->boundingRect().center());
 

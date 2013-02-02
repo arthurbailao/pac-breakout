@@ -13,6 +13,7 @@ public:
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
     virtual void advance(int phase);
     virtual QPainterPath shape() const;
+    virtual int	type() const;
 
 protected:
     virtual QPointF center() const;

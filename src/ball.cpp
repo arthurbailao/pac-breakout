@@ -49,6 +49,11 @@ QPointF Ball::center() const
     return this->mapToScene(this->boundingRect().center());
 }
 
+int	Ball::type() const
+{
+    return BreakoutItem::Ball;
+}
+
 void Ball::collision()
 {
 //    QList<BreakoutItem*> items = this->collidingItems();
@@ -57,10 +62,13 @@ void Ball::collision()
     if(this->collidingItems().isEmpty())
         return;
 
-    this->collidingItems().first()->center();
-    QPointF p1 = this->direction.p1();
-    this->direction.setP1(this->direction.p2());
-    this->direction.setP2(p1);
+    BreakoutItem* item = this->collidingItems().first();
+
+    if(item->type() == BreakoutItem::Wall || item->type() == BreakoutItem::Paddle) {
+        QPointF p1 = this->direction.p1();
+        this->direction.setP1(this->direction.p2());
+        this->direction.setP2(p1);
+    }
 }
 
 void Ball::next()
@@ -68,6 +76,6 @@ void Ball::next()
     qreal angle = this->direction.angle()*M_PI/180.0;
 //    qDebug() << this->direction.angle();
     this->direction.setP1(this->direction.p2());
-    this->direction.setP2(QPointF(this->direction.p1().x() + cos(angle), this->direction.p1().y() - sin(angle)));
+    this->direction.setP2(QPointF(this->direction.p1().x() + 1.5*cos(angle), this->direction.p1().y() - 1.5*sin(angle)));
     this->setPos(this->direction.p2());
 }

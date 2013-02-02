@@ -13,6 +13,7 @@ public:
     virtual QRectF boundingRect() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
     virtual QPainterPath shape() const;
+    virtual int type() const;
 
 protected:
     virtual QPointF center() const;

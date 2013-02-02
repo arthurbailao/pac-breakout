@@ -15,14 +15,16 @@ BreakoutWindow::BreakoutWindow(QWidget *parent) :
     sceneWidth(400), sceneHeight(300)
 {
     ui->setupUi(this);
+    ui->view->installEventFilter(this->scene);
     ui->view->setScene(this->scene);
     ui->view->setRenderHint(QPainter::Antialiasing);
+    ui->view->setMouseTracking(true);
 
     this->scene->setSceneRect(0,0,this->sceneWidth,this->sceneHeight);
     this->draw();
 
     connect(this->timer, SIGNAL(timeout()), this->scene, SLOT(advance()));
-    this->timer->start(10);
+    this->timer->start(8);
 }
 
 BreakoutWindow::~BreakoutWindow()
@@ -45,7 +47,9 @@ void BreakoutWindow::draw()
 //    this->scene->addLine(bottom, pen);
 
     this->scene->addItem(new Ball(100, 210));
-    this->scene->addItem(new Paddle);
+    PlayerPaddle* paddle = new PlayerPaddle;
+    this->scene->installEventFilter(paddle);
+    this->scene->addItem(paddle);
     this->scene->addItem(new Wall(top));
     this->scene->addItem(new Wall(left));
     this->scene->addItem(new Wall(right));
