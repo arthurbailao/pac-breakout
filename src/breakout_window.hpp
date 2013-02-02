@@ -25,6 +25,10 @@ private:
     const qreal sceneWidth, sceneHeight;
 
     void draw();
+    void drawWalls();
+    void drawBall();
+    void drawPaddles();
+    void drawBricks();
 };
 
 #endif // BREAKOUT_WINDOW_HPP

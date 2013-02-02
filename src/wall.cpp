@@ -3,15 +3,17 @@
 #include <QPainter>
 #include <QDebug>
 
-Wall::Wall(const QPointF& p1, const QPointF& p2, QGraphicsItem* parent) :
+Wall::Wall(bool solid, const QPointF& p1, const QPointF& p2, QGraphicsItem* parent) :
     BreakoutItem(parent),
-    line(p1, p2)
+    line(p1, p2),
+    solid(solid)
 {
 }
 
-Wall::Wall(const QLineF& line, QGraphicsItem* parent) :
+Wall::Wall(bool solid, const QLineF& line, QGraphicsItem* parent) :
     BreakoutItem(parent),
-    line(line)
+    line(line),
+    solid(solid)
 {
 }
 
@@ -31,19 +33,9 @@ QPainterPath Wall::shape() const
     QPainterPath path;
     path.addRect(this->boundingRect());
     return path;
-//    return QGraphicsObject::shape();
 }
 
 int Wall::type() const
 {
-    return BreakoutItem::Wall;
-}
-
-QPointF Wall::center() const
-{
-//    qDebug() << this->collidingItems().first()->center();
-
-    return this->mapToScene(this->boundingRect().center());
-
-//    return items.first()->boundingRect().center();
+    return BreakoutItem::BreakoutWall;
 }

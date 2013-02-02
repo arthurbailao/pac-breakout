@@ -7,7 +7,7 @@ class Paddle : public BreakoutItem
 {
     Q_OBJECT
 public:
-    explicit Paddle(QGraphicsItem* parent = 0);
+    explicit Paddle(int topLimit, int bottomLimit, QGraphicsItem* parent = 0);
 
     virtual QRectF boundingRect() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
@@ -16,13 +16,15 @@ public:
 
 protected:
     virtual QPointF center() const;
-    
+    void move(qreal y);
+
 signals:
     
 public slots:
 
 private:
     const qreal width, height;
+    const int topLimit, bottomLimit;
     
 };
 
@@ -30,7 +32,7 @@ class PlayerPaddle : public Paddle
 {
     Q_OBJECT
 public:
-    explicit PlayerPaddle(QGraphicsItem* parent = 0);
+    explicit PlayerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent = 0);
 
 protected:
     virtual bool eventFilter(QObject* obj, QEvent* event);

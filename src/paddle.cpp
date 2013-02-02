@@ -6,11 +6,11 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 
-Paddle::Paddle(QGraphicsItem* parent) :
+Paddle::Paddle(int topLimit, int bottomLimit, QGraphicsItem* parent) :
     BreakoutItem(parent),
-    width(15.0), height(40.0)
+    width(15.0), height(40.0),
+    topLimit(topLimit), bottomLimit(bottomLimit)
 {
-//    this->setPos(10, this->scene()->sceneRect().height()/2 - this->height/2);
 }
 
 QRectF Paddle::boundingRect() const
@@ -33,19 +33,24 @@ QPainterPath Paddle::shape() const
 
 int Paddle::type() const
 {
-    return BreakoutItem::Paddle;
+    return BreakoutItem::BreakoutPaddle;
 }
 
 QPointF Paddle::center() const
 {
     QRectF rect = this->boundingRect();
-//    qDebug() << this->collidingItems().first()->center();
-
     return this->mapToScene(QPointF(rect.left(), (rect.top() + rect.bottom())/2.0));
 }
 
-PlayerPaddle::PlayerPaddle(QGraphicsItem* parent) :
-    Paddle(parent)
+void Paddle::move(qreal y)
+{
+    if(y <= this->topLimit || (y+ this->boundingRect().height()) >= this->bottomLimit)
+        return;
+    this->setY(y);
+}
+
+PlayerPaddle::PlayerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent) :
+    Paddle(topLimit, bottomLimit, parent)
 {
 
 }
@@ -54,18 +59,17 @@ bool PlayerPaddle::eventFilter(QObject* /*obj*/, QEvent* event)
 {
     if(event->type() == QEvent::GraphicsSceneMouseMove) {
         QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent*>(event);
-        this->setY(mouseEvent->scenePos().y());
+        this->move(mouseEvent->scenePos().y());
     }
     else if(event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if(keyEvent->key() == Qt::Key_Up) {
-            this->setY(this->y() - 10);
+            this->move(this->y() - 10);
         }
         else if(keyEvent->key() == Qt::Key_Down) {
-            this->setY(this->y() + 10);
+            this->move(this->y() + 10);
         }
     }
-
 
     return false;
 }

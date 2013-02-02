@@ -1,4 +1,5 @@
 #include "ball.hpp"
+#include "wall.hpp"
 
 #include <QDebug>
 #include <QGraphicsScene>
@@ -14,7 +15,7 @@ Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     direction()
 {
     this->setPos(x, y);
-    this->direction = Direction(QPointF(x, y), QPointF(x-1, y));
+    this->direction = Direction(QPointF(x, y), QPointF(x-0.2, y-1));
 }
 
 QRectF Ball::boundingRect() const
@@ -33,7 +34,8 @@ void Ball::advance(int phase)
     if(!phase) return;
 
     this->next();
-    this->collision();
+    BreakoutItem::advance(phase);
+
 }
 
 QPainterPath Ball::shape() const
@@ -50,26 +52,33 @@ QPointF Ball::center() const
 
 int	Ball::type() const
 {
-    return BreakoutItem::Ball;
+    return BreakoutItem::BreakoutBall;
 }
 
-void Ball::collision()
+void Ball::collisionEvent(const QList<BreakoutItem*>& items)
 {
-    if(this->collidingItems().isEmpty())
-        return;
+    BreakoutItem* item = items.first();
 
-    BreakoutItem* item = this->collidingItems().first();
-
-    if(item->type() == BreakoutItem::Wall) {
+    if(item->type() == BreakoutItem::BreakoutWall) {
+        Wall* wall = static_cast<Wall*>(item);
+        if(!wall->isSolid())
+            return;
+        QLineF normal;
+        if(this->y() < this->scene()->height()/2)
+            normal = QLineF::fromPolar(1.0, 90.0);
+        else
+            normal = QLineF::fromPolar(1.0, 270.0);
+        qreal rotationAngle = 2.0 * this->direction.angleTo(normal);
         this->direction.invert();
+        this->direction.setAngle(this->direction.angle() + rotationAngle);
     }
-    else if(item->type() == BreakoutItem::Paddle) {
+    else if(item->type() == BreakoutItem::BreakoutPaddle) {
         QLineF normal(this->center(), item->center());
         qreal rotationAngle = 2.0 * this->direction.angleTo(normal);
         this->direction.invert();
         this->direction.setAngle(this->direction.angle() + rotationAngle);
-
     }
+
 }
 
 void Ball::next()

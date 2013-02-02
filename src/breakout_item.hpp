@@ -9,16 +9,18 @@ class BreakoutItem : public QGraphicsObject
 public:
     explicit BreakoutItem(QGraphicsItem* parent = 0);
 
-    virtual QPointF center() const = 0;
+    virtual QPointF center() const;
+    virtual void advance(int phase);
     
 protected:
     enum {
-        Ball = UserType,
-        Paddle = UserType + 1,
-        Wall = UserType + 2,
-        Brick = UserType + 3
+        BreakoutBall = UserType,
+        BreakoutPaddle = UserType + 1,
+        BreakoutWall = UserType + 2,
+        BreakoutBrick = UserType + 3
     };
 
+    virtual void collisionEvent(const QList<BreakoutItem*>& items);
     QList<BreakoutItem*> collidingItems(Qt::ItemSelectionMode mode = Qt::IntersectsItemShape) const;
     
 };

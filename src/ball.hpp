@@ -17,6 +17,7 @@ public:
 
 protected:
     virtual QPointF center() const;
+    virtual void collisionEvent(const QList<BreakoutItem*>& items);
     
 signals:
     
@@ -37,7 +38,7 @@ private:
     const qreal radius;
     Direction direction;
 
-    void collision();
+//    void collision();
     void next();
     
 };

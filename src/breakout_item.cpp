@@ -7,6 +7,11 @@ BreakoutItem::BreakoutItem(QGraphicsItem* parent) :
 {
 }
 
+QPointF BreakoutItem::center() const
+{
+    return this->boundingRect().center();
+}
+
 QList<BreakoutItem*> BreakoutItem::collidingItems(Qt::ItemSelectionMode mode) const
 {
     QList<BreakoutItem*> result;
@@ -20,3 +25,20 @@ QList<BreakoutItem*> BreakoutItem::collidingItems(Qt::ItemSelectionMode mode) co
     }
     return result;
 }
+
+void BreakoutItem::advance(int phase)
+{
+    if(!phase) return;
+
+    QList<BreakoutItem*> items = this->collidingItems();
+    if(items.isEmpty())
+        return;
+
+    this->collisionEvent(items);
+}
+
+void BreakoutItem::collisionEvent(const QList<BreakoutItem*>& /*items*/)
+{
+
+}
+
