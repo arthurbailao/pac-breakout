@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
+#include <QKeyEvent>
 
 Paddle::Paddle(QGraphicsItem* parent) :
     BreakoutItem(parent),
@@ -56,11 +57,15 @@ bool PlayerPaddle::eventFilter(QObject* /*obj*/, QEvent* event)
         this->setY(mouseEvent->scenePos().y());
     }
     else if(event->type() == QEvent::KeyPress) {
-
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if(keyEvent->key() == Qt::Key_Up) {
+            this->setY(this->y() - 10);
+        }
+        else if(keyEvent->key() == Qt::Key_Down) {
+            this->setY(this->y() + 10);
+        }
     }
-    else if(event->type() == QEvent::KeyRelease) {
 
-    }
 
     return false;
 }

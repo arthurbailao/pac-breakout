@@ -34,7 +34,6 @@ private:
         void invert();
     };
 
-    qreal x, y;
     const qreal radius;
     Direction direction;
 

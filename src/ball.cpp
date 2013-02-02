@@ -10,12 +10,11 @@
 
 Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     BreakoutItem(parent),
-    x(x), y(y),
     radius(5.0),
     direction()
 {
-    this->setPos(this->x, this->y);
-    this->direction = Direction(QPointF(this->x, this->y), QPointF(this->x-1, this->y));
+    this->setPos(x, y);
+    this->direction = Direction(QPointF(x, y), QPointF(x-1, y));
 }
 
 QRectF Ball::boundingRect() const
@@ -56,9 +55,6 @@ int	Ball::type() const
 
 void Ball::collision()
 {
-//    QList<BreakoutItem*> items = this->collidingItems();
-//    if(items.isEmpty())
-//        return;
     if(this->collidingItems().isEmpty())
         return;
 
@@ -79,7 +75,6 @@ void Ball::collision()
 void Ball::next()
 {
     qreal angle = this->direction.angle()*M_PI/180.0;
-//    qDebug() << this->direction.angle();
     this->direction.setP1(this->direction.p2());
     this->direction.setP2(QPointF(this->direction.p1().x() + 1.5*cos(angle), this->direction.p1().y() - 1.5*sin(angle)));
     this->setPos(this->direction.p2());
