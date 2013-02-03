@@ -1,5 +1,6 @@
 #include "ball.hpp"
 #include "wall.hpp"
+#include "brick.hpp"
 
 #include <QDebug>
 #include <QGraphicsScene>
@@ -57,10 +58,8 @@ int	Ball::type() const
 
 void Ball::collisionEvent(const QList<BreakoutItem*>& items)
 {
-    BreakoutItem* item = items.first();
-
-    if(item->type() == BreakoutItem::BreakoutWall) {
-        Wall* wall = static_cast<Wall*>(item);
+    if(items.first()->type() == BreakoutItem::BreakoutWall) {
+        Wall* wall = static_cast<Wall*>(items.first());
         if(!wall->isSolid())
             return;
         QLineF normal;
@@ -68,17 +67,30 @@ void Ball::collisionEvent(const QList<BreakoutItem*>& items)
             normal = QLineF::fromPolar(1.0, 90.0);
         else
             normal = QLineF::fromPolar(1.0, 270.0);
-        qreal rotationAngle = 2.0 * this->direction.angleTo(normal);
-        this->direction.invert();
-        this->direction.setAngle(this->direction.angle() + rotationAngle);
-    }
-    else if(item->type() == BreakoutItem::BreakoutPaddle) {
-        QLineF normal(this->center(), item->center());
-        qreal rotationAngle = 2.0 * this->direction.angleTo(normal);
-        this->direction.invert();
-        this->direction.setAngle(this->direction.angle() + rotationAngle);
-    }
 
+        this->direction.reflect(normal);
+    }
+    else if(items.first()->type() == BreakoutItem::BreakoutPaddle) {
+        QLineF normal(this->center(), items.first()->center());
+        this->direction.reflect(normal);
+    }
+    else if(items.first()->type() == BreakoutItem::BreakoutBrick) {
+        QVector<QPointF> solidBrickCenters;
+        Q_FOREACH(BreakoutItem* item, items) {
+            if(item->type() == BreakoutItem::BreakoutBrick && !static_cast<Brick*>(item)->isDestroyed())
+                solidBrickCenters << item->center();
+        }
+        QLineF normal;
+        if(solidBrickCenters.size() < 1)
+            return;
+        else if(solidBrickCenters.size() == 1)
+            normal = QLineF(this->center(), solidBrickCenters.first());
+        else {
+            QPolygonF polygon(solidBrickCenters);
+            normal = QLineF(this->center(), polygon.boundingRect().center());
+        }
+        this->direction.reflect(normal);
+    }
 }
 
 void Ball::next()
@@ -115,4 +127,11 @@ void Ball::Direction::invert()
     QPointF p1 = this->p1();
     this->setP1(this->p2());
     this->setP2(p1);
+}
+
+void Ball::Direction::reflect(const QLineF& normal)
+{
+    qreal rotationAngle = 2.0 * this->angleTo(normal);
+    this->invert();
+    this->setAngle(this->angle() + rotationAngle);
 }

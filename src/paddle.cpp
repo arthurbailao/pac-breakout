@@ -39,7 +39,7 @@ int Paddle::type() const
 QPointF Paddle::center() const
 {
     QRectF rect = this->boundingRect();
-    return this->mapToScene(QPointF(rect.left(), (rect.top() + rect.bottom())/2.0));
+    return this->mapToScene(QPointF(rect.left() - 10.0, (rect.top() + rect.bottom())/2.0));
 }
 
 void Paddle::move(qreal y)

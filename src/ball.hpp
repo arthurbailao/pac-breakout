@@ -33,6 +33,7 @@ private:
         Direction(const QLine& line);
 
         void invert();
+        void reflect(const QLineF& normal);
     };
 
     const qreal radius;

@@ -4,6 +4,7 @@
 #include "ball.hpp"
 #include "paddle.hpp"
 #include "wall.hpp"
+#include "brick.hpp"
 
 #include <QDebug>
 
@@ -61,11 +62,23 @@ void BreakoutWindow::drawPaddles()
 {
     PlayerPaddle* paddle = new PlayerPaddle(this->scene->sceneRect().top(), this->scene->sceneRect().bottom());
     this->scene->installEventFilter(paddle);
-    paddle->setPos(1, this->scene->height()/2.0 - paddle->boundingRect().height()/2.0);
+    paddle->setPos(5.0, this->scene->height()/2.0 - paddle->boundingRect().height()/2.0);
     this->scene->addItem(paddle);
 }
 
 void BreakoutWindow::drawBricks()
 {
+    const int cols = 9;
+    const int rows = 8;
+    const qreal offSet = 4.0;
 
+    for(int i = 0; i < cols; ++i) {
+        for(int j = 0; j < rows; ++j) {
+            Brick* brick = new Brick(0, 0);
+            const qreal x0 = (this->scene->width() / 2.0) - (cols * brick->boundingRect().width() + ((cols - 1) * offSet))/2.0;
+            const qreal y0 = (this->scene->height() / 2.0) - (rows * brick->boundingRect().height() + ((rows - 1) * offSet))/2.0;
+            brick->setPos(i * (brick->boundingRect().width() + offSet) + x0, j * (brick->boundingRect().height() + offSet) + y0);
+            this->scene->addItem(brick);
+        }
+    }
 }
