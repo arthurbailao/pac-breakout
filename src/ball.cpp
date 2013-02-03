@@ -13,10 +13,11 @@
 Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     BreakoutItem(parent),
     radius(5.0),
+    speed(1.0),
     direction()
 {
     this->setPos(x, y);
-    this->direction = Direction(QPointF(x, y), QPointF(x-0.2, y-1));
+    this->direction = Direction(QPointF(x, y), QPointF(x+1.0, y));
 }
 
 QRectF Ball::boundingRect() const
@@ -93,12 +94,29 @@ void Ball::collisionEvent(const QList<BreakoutItem*>& items)
     }
 }
 
+void Ball::setDirection(const QPointF& p1, const QPointF& p2)
+{
+    this->direction = Ball::Direction(p1, p2);
+}
+
+void Ball::setDirection(const QLineF& line)
+{
+    this->direction = Ball::Direction(line);
+}
+
 void Ball::next()
 {
     qreal angle = this->direction.angle()*M_PI/180.0;
     this->direction.setP1(this->direction.p2());
-    this->direction.setP2(QPointF(this->direction.p1().x() + 1.5*cos(angle), this->direction.p1().y() - 1.5*sin(angle)));
+    this->direction.setP2(QPointF(this->direction.p1().x() + this->speed * cos(angle), this->direction.p1().y() - this->speed * sin(angle)));
     this->setPos(this->direction.p2());
+    emit posChanged(QString("%1 x %2").arg(QString::number((int)this->direction.x2())).arg((int)this->direction.y2()));
+}
+
+void Ball::setBallSpeed(int ballSpeed)
+{
+    if(ballSpeed > 0 && ballSpeed < 100)
+        this->speed = ballSpeed/33.0;
 }
 
 
@@ -117,7 +135,7 @@ Ball::Direction::Direction(qreal x1, qreal y1, qreal x2, qreal y2) :
 {
 }
 
-Ball::Direction::Direction(const QLine& line) :
+Ball::Direction::Direction(const QLineF& line) :
     QLineF(line)
 {
 }

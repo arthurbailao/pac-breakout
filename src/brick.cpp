@@ -50,3 +50,9 @@ void Brick::destroy()
     this->destroyed = true;
     this->hide();
 }
+
+void Brick::build()
+{
+    this->destroyed = false;
+    this->show();
+}

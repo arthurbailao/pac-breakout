@@ -9,7 +9,8 @@ SOURCES += \
     src/paddle.cpp \
     src/breakout_item.cpp \
     src/wall.cpp \
-    src/brick.cpp
+    src/brick.cpp \
+    src/controller.cpp
 
 HEADERS += \
     src/ball.hpp \
@@ -17,7 +18,8 @@ HEADERS += \
     src/paddle.hpp \
     src/breakout_item.hpp \
     src/wall.hpp \
-    src/brick.hpp
+    src/brick.hpp \
+    src/controller.hpp
 
 FORMS += \
     src/breakout_window.ui

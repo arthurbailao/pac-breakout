@@ -19,6 +19,7 @@ protected:
     void move(qreal y);
 
 signals:
+    void posChanged(QString);
     
 public slots:
 

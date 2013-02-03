@@ -47,6 +47,7 @@ void Paddle::move(qreal y)
     if(y <= this->topLimit || (y+ this->boundingRect().height()) >= this->bottomLimit)
         return;
     this->setY(y);
+    emit posChanged(QString::number((int)y));
 }
 
 PlayerPaddle::PlayerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent) :

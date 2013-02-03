@@ -13,6 +13,8 @@ public:
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
     virtual int	type() const;
 
+    void build();
+
     inline bool isDestroyed() const
     {
         return this->destroyed;
