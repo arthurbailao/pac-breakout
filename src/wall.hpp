@@ -3,10 +3,12 @@
 
 #include "breakout_item.hpp"
 
+//Classe que reprensenta as paredes do jogo.
 class Wall : public BreakoutItem
 {
     Q_OBJECT
 public:
+    //No construtor é falado se a parede é sólida ou não. Top e Bottom são sólidas, as outras não.
     explicit Wall(bool solid, const QPointF& p1, const QPointF& p2, QGraphicsItem* parent = 0);
     explicit Wall(bool solid, const QLineF& line, QGraphicsItem* parent = 0);
 

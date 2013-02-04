@@ -71,11 +71,13 @@ void BreakoutWindow::createPaddles()
     connect(this->humanPaddle, SIGNAL(posChanged(QString)), ui->labelPlayerPaddlePos, SLOT(setText(QString)));
     this->humanPaddle->setPos(5.0, this->scene->height()/2.0 - this->humanPaddle->boundingRect().height()/2.0);
     this->scene->addItem(this->humanPaddle);
+    ui->labelPlayerPaddlePos->setText(QString::number((int)this->humanPaddle->y()));
 
     this->computerPaddle = new ComputerPaddle(this->scene->sceneRect().top(), this->scene->sceneRect().bottom());
     connect(this->computerPaddle, SIGNAL(posChanged(QString)), ui->labelComputerPaddlePos, SLOT(setText(QString)));
     this->computerPaddle->setPos(this->scene->width() - 20.0, this->scene->height()/2.0 - this->computerPaddle->boundingRect().height()/2.0);
     this->scene->addItem(this->computerPaddle);
+    ui->labelComputerPaddlePos->setText(QString::number((int)this->computerPaddle->y()));
 
 }
 
@@ -115,6 +117,7 @@ void BreakoutWindow::createBricks()
             this->scene->addItem(brick);
         }
     }
+    this->controller->setTotalBricks(this->bricks.length());
 }
 
 void BreakoutWindow::ballStartPos()

@@ -15,6 +15,7 @@ namespace Ui {
 class BreakoutWindow;
 }
 
+//Janela principal do jogo.
 class BreakoutWindow : public QMainWindow
 {
     Q_OBJECT
@@ -24,11 +25,14 @@ public:
     ~BreakoutWindow();
     
 private slots:
+    //Slots dos botões de controle
     void on_pushButtonQuit_clicked();
     void on_pushButtonStartStop_clicked();
     void on_pushButtonNewGame_clicked();
 
+    //Slot que posiciona a bola em sua posição inicial, seja para o jogador, seja para o computador.
     void ballStartPos();
+    //Slot que é chamado quando o jogo termina.
     void onGameOver(Controller::Players player);
 
 private:
@@ -53,8 +57,6 @@ private:
     void createPaddles();
     void createBall();
     void createBricks();
-
-
 };
 
 #endif // BREAKOUT_WINDOW_HPP

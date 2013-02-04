@@ -4,7 +4,8 @@ Controller::Controller(QObject *parent) :
     QObject(parent),
     lastHit(Human),
     humanScore(0), computerScore(0),
-    remainingBalls(6)
+    remainingBalls(6),
+    totalBricks(0), remainingBricks(totalBricks)
 {
 }
 
@@ -53,6 +54,7 @@ void Controller::onLeftWallHit()
 void Controller::onBrickHit()
 {
     this->addScore(2);
+    this->updateRemainingBricks();
 }
 
 void Controller::addScore(int value)
@@ -75,6 +77,13 @@ void Controller::resetGame()
     emit this->computerScoreChanged(QString::number(this->computerScore));
     this->remainingBalls = 6;
     emit this->remainingBallsChanged(QString::number(this->remainingBalls));
+    this->remainingBricks = this->totalBricks;
+}
+
+void Controller::setTotalBricks(int value)
+{
+    this->totalBricks = value;
+    this->remainingBricks = value;
 }
 
 void Controller::updateRemainingBalls()
@@ -82,6 +91,17 @@ void Controller::updateRemainingBalls()
     this->remainingBalls--;
     emit this->remainingBallsChanged(QString::number(this->remainingBalls));
     if(this->remainingBalls == 0) {
+        if(this->humanScore > this->computerScore)
+            emit this->gameOver(Human);
+        else
+            emit this->gameOver(Computer);
+    }
+}
+
+void Controller::updateRemainingBricks()
+{
+    this->remainingBricks--;
+    if(this->remainingBricks == 0) {
         if(this->humanScore > this->computerScore)
             emit this->gameOver(Human);
         else
