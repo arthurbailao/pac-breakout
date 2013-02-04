@@ -28,6 +28,9 @@ private slots:
     void on_pushButtonStartStop_clicked();
     void on_pushButtonNewGame_clicked();
 
+    void ballStartPos();
+    void onGameOver(Controller::Players player);
+
 private:
     Ui::BreakoutWindow *ui;
     QGraphicsScene* scene;
@@ -37,7 +40,7 @@ private:
     const qreal sceneWidth, sceneHeight;
 
     Ball* ball;
-    Paddle* playerPaddle;
+    Paddle* humanPaddle;
     Paddle* computerPaddle;
     Wall* topWall;
     Wall* leftWall;
@@ -51,7 +54,7 @@ private:
     void createBall();
     void createBricks();
 
-    void ballStartPos();
+
 };
 
 #endif // BREAKOUT_WINDOW_HPP

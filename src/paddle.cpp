@@ -18,19 +18,6 @@ QRectF Paddle::boundingRect() const
     return QRectF(0, 0, this->width, this->height);
 }
 
-void Paddle::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/)
-{
-     const int startAngle = 270 * 16;
-     const int spanAngle = 180 * 16;
-     painter->setBrush(Qt::SolidPattern);
-     painter->drawPie(this->boundingRect(), startAngle, spanAngle);
-}
-
-QPainterPath Paddle::shape() const
-{
-    return QGraphicsObject::shape();
-}
-
 int Paddle::type() const
 {
     return BreakoutItem::BreakoutPaddle;
@@ -50,13 +37,21 @@ void Paddle::move(qreal y)
     emit posChanged(QString::number((int)y));
 }
 
-PlayerPaddle::PlayerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent) :
+HumanPaddle::HumanPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent) :
     Paddle(topLimit, bottomLimit, parent)
 {
 
 }
 
-bool PlayerPaddle::eventFilter(QObject* /*obj*/, QEvent* event)
+void HumanPaddle::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/)
+{
+     const int startAngle = 270 * 16;
+     const int spanAngle = 180 * 16;
+     painter->setBrush(Qt::green);
+     painter->drawPie(this->boundingRect(), startAngle, spanAngle);
+}
+
+bool HumanPaddle::eventFilter(QObject* /*obj*/, QEvent* event)
 {
     if(event->type() == QEvent::GraphicsSceneMouseMove) {
         QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent*>(event);
@@ -73,4 +68,18 @@ bool PlayerPaddle::eventFilter(QObject* /*obj*/, QEvent* event)
     }
 
     return false;
+}
+
+ComputerPaddle::ComputerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent) :
+    Paddle(topLimit, bottomLimit, parent)
+{
+
+}
+
+void ComputerPaddle::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/)
+{
+     const int startAngle = 90 * 16;
+     const int spanAngle = 180 * 16;
+     painter->setBrush(Qt::red);
+     painter->drawPie(this->boundingRect(), startAngle, spanAngle);
 }

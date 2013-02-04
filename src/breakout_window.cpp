@@ -2,6 +2,7 @@
 #include "ui_breakout_window.h"
 
 #include <QDebug>
+#include <QMessageBox>
 
 BreakoutWindow::BreakoutWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,7 +12,7 @@ BreakoutWindow::BreakoutWindow(QWidget *parent) :
     controller(new Controller(this)),
     sceneWidth(400), sceneHeight(300),
     ball(NULL),
-    playerPaddle(NULL), computerPaddle(NULL),
+    humanPaddle(NULL), computerPaddle(NULL),
     topWall(NULL), leftWall(NULL), bottomWall(NULL),rightWall(NULL),
     bricks(QList<Brick*>())
 {
@@ -24,6 +25,11 @@ BreakoutWindow::BreakoutWindow(QWidget *parent) :
     this->create();
 
     connect(this->timer, SIGNAL(timeout()), this->scene, SLOT(advance()));
+
+    connect(this->controller, SIGNAL(humanScoreChanged(QString)), ui->labelPlayerPoints, SLOT(setText(QString)));
+    connect(this->controller, SIGNAL(computerScoreChanged(QString)), ui->labelComputerPoints, SLOT(setText(QString)));
+    connect(this->controller, SIGNAL(remainingBallsChanged(QString)), ui->labelNumberOfBalls, SLOT(setText(QString)));
+    connect(this->controller, SIGNAL(gameOver(Controller::Players)), this, SLOT(onGameOver(Controller::Players)));
 //    this->timer->start(10);
 }
 
@@ -61,19 +67,34 @@ void BreakoutWindow::createWalls()
 
 void BreakoutWindow::createPaddles()
 {
-    this->playerPaddle = new PlayerPaddle(this->scene->sceneRect().top(), this->scene->sceneRect().bottom());
-    connect(this->playerPaddle, SIGNAL(posChanged(QString)), ui->labelPlayerPaddlePos, SLOT(setText(QString)));
-    this->scene->installEventFilter(this->playerPaddle);
-    this->playerPaddle->setPos(5.0, this->scene->height()/2.0 - this->playerPaddle->boundingRect().height()/2.0);
-    this->scene->addItem(this->playerPaddle);
+    this->humanPaddle = new HumanPaddle(this->scene->sceneRect().top(), this->scene->sceneRect().bottom());
+    connect(this->humanPaddle, SIGNAL(posChanged(QString)), ui->labelPlayerPaddlePos, SLOT(setText(QString)));
+    this->humanPaddle->setPos(5.0, this->scene->height()/2.0 - this->humanPaddle->boundingRect().height()/2.0);
+    this->scene->addItem(this->humanPaddle);
+
+    this->computerPaddle = new ComputerPaddle(this->scene->sceneRect().top(), this->scene->sceneRect().bottom());
+    connect(this->computerPaddle, SIGNAL(posChanged(QString)), ui->labelComputerPaddlePos, SLOT(setText(QString)));
+    this->computerPaddle->setPos(this->scene->width() - 20.0, this->scene->height()/2.0 - this->computerPaddle->boundingRect().height()/2.0);
+    this->scene->addItem(this->computerPaddle);
+
 }
 
 void BreakoutWindow::createBall()
 {
     this->ball = new Ball(0, 0);
-    this->ballStartPos();
     connect(ball, SIGNAL(posChanged(QString)), ui->labelBallPosition, SLOT(setText(QString)));
     connect(ui->ballSpeedSlider, SIGNAL(valueChanged(int)), ball, SLOT(setBallSpeed(int)));
+    connect(this->ball, SIGNAL(topBottomWallHit()), this->controller, SLOT(onTopBottomWallHit()));
+
+    connect(this->ball, SIGNAL(leftWallHit()), this->controller, SLOT(onLeftWallHit()));
+    connect(this->ball, SIGNAL(leftWallHit()), this, SLOT(ballStartPos()));
+    connect(this->ball, SIGNAL(rightWallHit()), this->controller, SLOT(onRightWallHit()));
+    connect(this->ball, SIGNAL(rightWallHit()), this, SLOT(ballStartPos()));
+
+    connect(this->ball, SIGNAL(computerPaddleHit()), this->controller, SLOT(onComputerPaddleHit()));
+    connect(this->ball, SIGNAL(humanPaddleHit()), this->controller, SLOT(onHumanPaddleHit()));
+
+    this->ballStartPos();
     this->scene->addItem(ball);
 }
 
@@ -90,6 +111,7 @@ void BreakoutWindow::createBricks()
             const qreal y0 = (this->scene->height() / 2.0) - (rows * brick->boundingRect().height() + ((rows - 1) * offSet))/2.0;
             brick->setPos(i * (brick->boundingRect().width() + offSet) + x0, j * (brick->boundingRect().height() + offSet) + y0);
             this->bricks << brick;
+            connect(brick, SIGNAL(imDestroyed()), this->controller, SLOT(onBrickHit()));
             this->scene->addItem(brick);
         }
     }
@@ -97,11 +119,19 @@ void BreakoutWindow::createBricks()
 
 void BreakoutWindow::ballStartPos()
 {
+    QPointF startPoint;
     if(this->controller->currentTurn() == Controller::Human) {
-        QPointF startPoint = this->playerPaddle->pos() + QPointF(20.0, this->playerPaddle->boundingRect().height()/2.0);
-        this->ball->setPos(startPoint);
+        startPoint = QPointF(20.0, this->scene->height()/2.0);
         this->ball->setDirection(startPoint, startPoint + QPointF(1.0, 0));
     }
+    else {
+        startPoint = QPointF(this->scene->width() - 30.0, this->scene->height()/2.0);
+        this->ball->setDirection(startPoint, startPoint + QPointF(-1.0, 0));
+    }
+    if(this->timer->isActive())
+        this->on_pushButtonStartStop_clicked();
+    this->ball->setPos(startPoint);
+    this->ball->enableCollisions();
 }
 
 
@@ -113,10 +143,12 @@ void BreakoutWindow::on_pushButtonQuit_clicked()
 void BreakoutWindow::on_pushButtonStartStop_clicked()
 {
     if(this->timer->isActive()) {
+        this->scene->removeEventFilter(this->humanPaddle);
         ui->pushButtonStartStop->setText("Iniciar");
         this->timer->stop();
     }
     else {
+        this->scene->installEventFilter(this->humanPaddle);
         ui->pushButtonStartStop->setText("Pausar");
         this->timer->start(10);
         this->ball->setBallSpeed(ui->ballSpeedSlider->value());
@@ -125,6 +157,47 @@ void BreakoutWindow::on_pushButtonStartStop_clicked()
 
 void BreakoutWindow::on_pushButtonNewGame_clicked()
 {
+    if(this->timer->isActive())
+        this->on_pushButtonStartStop_clicked();
 
+    QMessageBox::StandardButton answer = QMessageBox::question(this, "Novo Jogo", "Deseja abandonar o jogo?",
+                                         QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+
+    if(answer == QMessageBox::Yes) {
+        this->ballStartPos();
+        Q_FOREACH(Brick* brick, this->bricks) {
+            brick->build();
+        }
+        this->controller->resetGame();
+    }
+    else {
+        this->on_pushButtonStartStop_clicked();
+    }
+}
+
+void BreakoutWindow::onGameOver(Controller::Players player)
+{
+    if(this->timer->isActive())
+        this->on_pushButtonStartStop_clicked();
+
+    QString message;
+    if(player == Controller::Human)
+        message = QString::fromUtf8("Parabéns, você venceu!");
+    else
+        message = QString::fromUtf8("Você foi derrotado.");
+
+    QMessageBox::StandardButton answer = QMessageBox::question(this, "Game Over", message + QString(" Deseja jogar novamente?"),
+                                         QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+
+    if(answer == QMessageBox::Yes) {
+        this->ballStartPos();
+        Q_FOREACH(Brick* brick, this->bricks) {
+            brick->build();
+        }
+        this->controller->resetGame();
+    }
+    else {
+        this->on_pushButtonQuit_clicked();
+    }
 }
 

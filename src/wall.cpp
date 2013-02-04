@@ -24,7 +24,7 @@ QRectF Wall::boundingRect() const
 
 void Wall::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/)
 {
-    painter->setPen(Qt::white);
+    painter->setPen(Qt::blue);
     painter->drawRect(QRectF(this->line.p1(), this->line.p2()));
 }
 

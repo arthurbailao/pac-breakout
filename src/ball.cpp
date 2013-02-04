@@ -14,7 +14,8 @@ Ball::Ball(qreal x, qreal y, QGraphicsItem *parent) :
     BreakoutItem(parent),
     radius(5.0),
     speed(1.0),
-    direction()
+    direction(),
+    collisionEnabled(true)
 {
     this->setPos(x, y);
     this->direction = Direction(QPointF(x, y), QPointF(x+1.0, y));
@@ -61,8 +62,14 @@ void Ball::collisionEvent(const QList<BreakoutItem*>& items)
 {
     if(items.first()->type() == BreakoutItem::BreakoutWall) {
         Wall* wall = static_cast<Wall*>(items.first());
-        if(!wall->isSolid())
+        if(!wall->isSolid() && collisionEnabled) {
+            this->collisionEnabled = false;
+            if(this->x() < this->scene()->width()/2.0)
+                emit this->leftWallHit();
+            else
+                emit this->rightWallHit();
             return;
+        }
         QLineF normal;
         if(this->y() < this->scene()->height()/2)
             normal = QLineF::fromPolar(1.0, 90.0);
@@ -70,10 +77,15 @@ void Ball::collisionEvent(const QList<BreakoutItem*>& items)
             normal = QLineF::fromPolar(1.0, 270.0);
 
         this->direction.reflect(normal);
+        emit this->topBottomWallHit();
     }
     else if(items.first()->type() == BreakoutItem::BreakoutPaddle) {
         QLineF normal(this->center(), items.first()->center());
         this->direction.reflect(normal);
+        if(this->x() < this->scene()->width()/2.0)
+            emit this->humanPaddleHit();
+        else
+            emit this->computerPaddleHit();
     }
     else if(items.first()->type() == BreakoutItem::BreakoutBrick) {
         QVector<QPointF> solidBrickCenters;
@@ -97,11 +109,13 @@ void Ball::collisionEvent(const QList<BreakoutItem*>& items)
 void Ball::setDirection(const QPointF& p1, const QPointF& p2)
 {
     this->direction = Ball::Direction(p1, p2);
+    emit posChanged(QString("%1 x %2").arg(QString::number((int)this->direction.x2())).arg((int)this->direction.y2()));
 }
 
 void Ball::setDirection(const QLineF& line)
 {
     this->direction = Ball::Direction(line);
+    emit posChanged(QString("%1 x %2").arg(QString::number((int)this->direction.x2())).arg((int)this->direction.y2()));
 }
 
 void Ball::next()

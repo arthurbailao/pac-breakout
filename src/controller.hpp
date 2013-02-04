@@ -15,18 +15,30 @@ public:
         Computer = 2
     };
 
-    inline Players currentTurn() const
-    {
-        return this->turn;
-    }
-    
+    Players currentTurn() const;
+    void resetGame();
+
 signals:
+    void humanScoreChanged(QString);
+    void computerScoreChanged(QString);
+    void remainingBallsChanged(QString);
+    void gameOver(Controller::Players);
     
 public slots:
+    void onHumanPaddleHit();
+    void onComputerPaddleHit();
+    void onTopBottomWallHit();
+    void onRightWallHit();
+    void onLeftWallHit();
+    void onBrickHit();
 
 private:
-    Players turn;
     Players lastHit;
+    int humanScore, computerScore;
+    int remainingBalls;
+
+    void addScore(int value);
+    void updateRemainingBalls();
     
 };
 

@@ -10,8 +10,6 @@ public:
     explicit Paddle(int topLimit, int bottomLimit, QGraphicsItem* parent = 0);
 
     virtual QRectF boundingRect() const;
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
-    virtual QPainterPath shape() const;
     virtual int type() const;
 
 protected:
@@ -29,15 +27,26 @@ private:
     
 };
 
-class PlayerPaddle : public Paddle
+class HumanPaddle : public Paddle
 {
     Q_OBJECT
 public:
-    explicit PlayerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent = 0);
+    explicit HumanPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent = 0);
+
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
 
 protected:
     virtual bool eventFilter(QObject* obj, QEvent* event);
 
+};
+
+class ComputerPaddle : public Paddle
+{
+    Q_OBJECT
+public:
+    explicit ComputerPaddle(int topLimit, int bottomLimit, QGraphicsItem* parent = 0);
+
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/);
 };
 
 

@@ -40,19 +40,24 @@ int	Brick::type() const
 
 void Brick::collisionEvent(const QList<BreakoutItem*>& items)
 {
-    if(items.first()->type() == BreakoutItem::BreakoutBall) {
+    if(items.first()->type() == BreakoutItem::BreakoutBall && !this->destroyed) {
         this->destroy();
+        emit this->imDestroyed();
     }
 }
 
 void Brick::destroy()
 {
-    this->destroyed = true;
-    this->hide();
+    if(!this->destroyed) {
+        this->destroyed = true;
+        this->hide();
+    }
 }
 
 void Brick::build()
 {
-    this->destroyed = false;
-    this->show();
+    if(this->destroyed) {
+        this->destroyed = false;
+        this->show();
+    }
 }

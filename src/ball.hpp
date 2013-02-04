@@ -18,12 +18,22 @@ public:
     void setDirection(const QPointF& p1, const QPointF& p2);
     void setDirection(const QLineF& line);
 
+    inline void enableCollisions()
+    {
+        this->collisionEnabled = true;
+    }
+
 protected:
     virtual QPointF center() const;
     virtual void collisionEvent(const QList<BreakoutItem*>& items);
     
 signals:
     void posChanged(QString);
+    void humanPaddleHit();
+    void computerPaddleHit();
+    void leftWallHit();
+    void rightWallHit();
+    void topBottomWallHit();
     
 public slots:
     void setBallSpeed(int ballSpeed);
@@ -44,6 +54,7 @@ private:
     const qreal radius;
     qreal speed;
     Direction direction;
+    bool collisionEnabled;
 
 //    void collision();
     void next();

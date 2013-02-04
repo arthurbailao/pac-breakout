@@ -25,6 +25,7 @@ protected:
     virtual void collisionEvent(const QList<BreakoutItem*>& items);
     
 signals:
+    void imDestroyed();
     
 public slots:
 
